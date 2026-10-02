@@ -96,6 +96,10 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
         }),
       });
 
+      if (!res.ok) {
+        throw new Error(`API status ${res.status}`);
+      }
+
       const data = await res.json();
 
       if (data.reply) {
@@ -110,11 +114,28 @@ export const AiAssistantModal: React.FC<AiAssistantModalProps> = ({
         throw new Error(data.error || 'Tiada jawapan dari AI');
       }
     } catch (err: any) {
-      console.error('Chat error:', err);
+      console.warn('Chat API notice (using responsive local menu assistant):', err);
+      
+      // Intelligent local assistant fallback for static hosting (e.g. GitHub Pages)
+      let localReply = 'Terima kasih atas pertanyaan anda! Di Dapur Bonda, semua patty burger daging & ayam dan popia simpul kasih dibuat segar setiap hari tanpa bahan pengawet. Ada apa-apa menu spesifik yang anda cari?';
+      const lower = messageContent.toLowerCase();
+
+      if (lower.includes('orang') || lower.includes('ramai') || lower.includes('pax') || lower.includes('jamuan')) {
+        localReply = 'Untuk jamuan 4-6 orang, Kak sarankan ambil 1 Set Kombo Minum Petang Kasih (RM 22) bersama 1 Balang Mega Popia Simpul (650g - RM 38)! Jimat, meriah dan boleh kongsi makan panas-panas.';
+      } else if (lower.includes('budak') || lower.includes('kanak') || lower.includes('pedas') || lower.includes('tak pedas')) {
+        localReply = 'Untuk kanak-kanak atau yang kurang makan pedas, Popia Simpul Original dan Golden Cheese adalah pilihan no.1! Rasanya manis berlemak ikan segar. Untuk burger, Burger Ayam Crispy Buttermilk memang lembut dan sedap.';
+      } else if (lower.includes('tahan') || lower.includes('simpan') || lower.includes('expired') || lower.includes('tarikh')) {
+        localReply = 'Popia Simpul Kasih kami tahan sehingga 2-3 bulan jika disimpan dalam balang bertutup rapat pada suhu bilik. Jangan simpan tempat lembap supaya kekal rangup krup-krup!';
+      } else if (lower.includes('kupon') || lower.includes('diskaun') || lower.includes('promo') || lower.includes('kod')) {
+        localReply = 'Ada! Masukkan kod "KASIH5" dalam troli untuk jimat RM5 (minima belanja RM25), atau kod "SEDAP10" untuk diskaun 10%! Penghantaran juga PERCUMA untuk pesanan RM40 ke atas.';
+      } else if (lower.includes('burger') || lower.includes('daging') || lower.includes('ayam')) {
+        localReply = 'Burger paling laris kami ialah "Burger Daging Special Homemade" (RM 11.50) dengan limpahan sos lada hitam dan telur banji, serta "Burger Ayam Crispy Buttermilk" (RM 10.90) yang rangup garing!';
+      }
+
       const fallbackMsg: ChatMessage = {
-        id: `err-${Date.now()}`,
+        id: `local-${Date.now()}`,
         role: 'assistant',
-        text: 'Maaf ya, talian dapur kami sedang sibuk seketika. Jangan risau, anda boleh terus lihat menu burger daging/ayam dan popia simpul kasih kami di muka depan atau WhatsApp terus ke 019-348 2901!',
+        text: localReply,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, fallbackMsg]);

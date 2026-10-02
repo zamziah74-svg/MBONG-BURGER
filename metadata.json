@@ -1,0 +1,6 @@
+{
+  "name": "Burger & Popia Simpul",
+  "description": "Aplikasi pesanan burger buatan sendiri dan popia simpul kasih rangup. Segar, menyelerakan dan dibuat dengan penuh kasih sayang.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
